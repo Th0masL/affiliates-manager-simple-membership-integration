@@ -56,8 +56,13 @@ function wpam_simple_membership_payment_completed($ipn_data)
         $purchaseLogId = $ipn_data['txn_id'];
         $purchaseAmount = $ipn_data['mc_gross']; //TODO - later calculate sub-total only
         $strRefKey = $tracking_value;
+        // Try to detect the email of the buyer using ipn_data['payer_email']
+        if (!empty($ipn_data['payer_email'])) {
+        	$buyer_email = $ipn_data['payer_email'];
+        }
+        else { $buyer_email = ""; }
         $requestTracker = new WPAM_Tracking_RequestTracker();
-        $requestTracker->handleCheckoutWithRefKey( $purchaseLogId, $purchaseAmount, $strRefKey);
+        $requestTracker->handleCheckoutWithRefKey( $purchaseLogId, $purchaseAmount, $strRefKey, $buyer_email);
         WPAM_Logger::log_debug('Simple Membership Integration - Commission tracked for transaction ID: '.$purchaseLogId.'. Purchase amt: '.$purchaseAmount);
     }
     else{
